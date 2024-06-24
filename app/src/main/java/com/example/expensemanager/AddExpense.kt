@@ -124,161 +124,147 @@ fun AddExpense(navController:NavController) {
 
 
 
-@Composable
-fun AddExpenseCard(modifier: Modifier, navController: NavController,viewModel: AddExpenseViewModel = viewModel(factory = AddExpenseViewModel.AddExpenseViewModelFactory(LocalContext.current))
-){
 
-    val totalBalance = remember {
-        mutableStateOf<Double?>(null)
-    }
+@Composable
+fun AddExpenseCard(
+    modifier: Modifier,
+    navController: NavController,
+    viewModel: AddExpenseViewModel = viewModel(factory = AddExpenseViewModel.AddExpenseViewModelFactory(LocalContext.current))
+) {
+    val totalBalance = remember { mutableStateOf<Double?>(null) }
 
     // Coroutine to fetch total balance
     LaunchedEffect(Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val balance = viewModel.getTotalBalance()
-            totalBalance.value = balance
+            withContext(Dispatchers.Main) {
+                totalBalance.value = balance
+            }
         }
     }
 
-    val name = remember {
-        mutableStateOf("")
-    }
+    val name = remember { mutableStateOf("") }
+    val amount = remember { mutableStateOf("") }
+    val date = remember { mutableStateOf(0L) }
+    val dateDialogVisibility = remember { mutableStateOf(false) }
+    val category = remember { mutableStateOf("--Choose Category--") }
+    val type = remember { mutableStateOf("--Choose Type--") }
+    val errorMessage = remember { mutableStateOf("") }
 
-    val amount = remember {
-        mutableStateOf("")
-    }
-
-    val date = remember {
-        mutableStateOf(0L)
-    }
-
-    val dateDialogVisibility = remember {
-        mutableStateOf(false)
-    }
-
-    val category = remember {
-        mutableStateOf("--Choose Category--")
-    }
-
-    val type = remember {
-        mutableStateOf("--Choose Type--")
-    }
-
-    val errorMessage = remember {
-        mutableStateOf("")
-    }
-
-
-
-    Column(modifier = modifier
-        .padding(16.dp)
-        .fillMaxWidth()
-        .shadow(16.dp)
-        .clip(RoundedCornerShape(16.dp))
-        .background(Color.White)
-        .padding(16.dp)
-        .verticalScroll(rememberScrollState())) {
-
-
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .shadow(16.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White)
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
         ExpenseTextView(text = "Name", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(8.dp))
-        OutlinedTextField(value = name.value, onValueChange = {name.value= it}, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = name.value, onValueChange = { name.value = it }, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.size(16.dp))
 
         ExpenseTextView(text = "Amount", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(4.dp))
-        OutlinedTextField(value = amount.value, onValueChange = {amount.value= it}, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = amount.value, onValueChange = { amount.value = it }, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.size(8.dp))
 
-        //date using datepicker dialog
-
-
+        // Date using datepicker dialog
         ExpenseTextView(text = "Date", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(4.dp))
-        (if (date.value ==0L) "" else utils.formatDate(date.value))?.let {
+        (if (date.value == 0L) "" else utils.formatDate(date.value))?.let {
             OutlinedTextField(
-                value = it, onValueChange = {},
+                value = it,
+                onValueChange = {},
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { dateDialogVisibility.value = true },
-                enabled = false, colors = OutlinedTextFieldDefaults.colors(
+                enabled = false,
+                colors = OutlinedTextFieldDefaults.colors(
                     disabledBorderColor = Color.Black,
                     disabledTextColor = Color.Black
-                ))
+                )
+            )
         }
         Spacer(modifier = Modifier.size(8.dp))
 
-
-        //dropdown menu
-
+        // Dropdown menu for category
         ExpenseTextView(text = "Category", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(4.dp))
-        ExpenseDropDown(listOf("--Choose Category--","Netflix","Paypal","Upworks","Salary","Starbucks","Education","Hospital","Online Shopping","Offline Shopping","Grocery"),
-            onItemSelected = {category.value=it})
+        ExpenseDropDown(
+            listOf(
+                "--Choose Category--", "Netflix", "Paypal", "Upworks", "Salary",
+                "Starbucks", "Education", "Hospital", "Online Shopping", "Offline Shopping", "Grocery"
+            ),
+            onItemSelected = { category.value = it }
+        )
         Spacer(modifier = Modifier.size(8.dp))
 
-
-
-        //type of expense
-
+        // Dropdown menu for type
         ExpenseTextView(text = "Type", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(4.dp))
-        ExpenseDropDown(listOf("--Choose Type--","Income","Expense"),
-            onItemSelected = {type.value=it})
+        ExpenseDropDown(
+            listOf("--Choose Type--", "Income", "Expense"),
+            onItemSelected = { type.value = it }
+        )
         Spacer(modifier = Modifier.size(8.dp))
 
-        fun validateAndSubmitExpense(){
-            if (category.value=="--Choose Category--"||type.value=="--Choose Type--"){
-                errorMessage.value="Please select a valid category and type"
-            }
-            else{
-                errorMessage.value=""
+        fun validateAndSubmitExpense() {
+            if (category.value == "--Choose Category--" || type.value == "--Choose Type--") {
+                errorMessage.value = "Please select a valid category and type"
+            } else {
+                errorMessage.value = ""
+                val expenseAmount = amount.value.toDoubleOrNull() ?: 0.0
+                val formattedDate = utils.formatDate(date.value)
+                val expenseType = type.value
+
+                val currentTotalBalance = totalBalance.value ?: 0.0
+                val updatedTotalBalance = if (expenseType == "Income") {
+                    currentTotalBalance + expenseAmount
+                } else {
+                    currentTotalBalance - expenseAmount
+                }
+
                 val model = ExpenseEntity(
-                    null,name.value,
-                    amount.value.toDoubleOrNull()?:0.0,
-                    utils.formatDate(date.value),
-                    category.value,
-                    type.value,
-                    totalBalance.value?:0.0
+                    id = null,
+                     name.value,
+                    amount = expenseAmount,
+                    date = formattedDate,
+                    category = category.value,
+                    type = expenseType,
+                    totalBalance = updatedTotalBalance
                 )
 
                 CoroutineScope(Dispatchers.IO).launch {
                     val isSuccess = viewModel.addExpense(model)
-                    if (isSuccess){
-                        withContext(Dispatchers.Main){
-                            if (model.type=="Income")
-                            {
-                                totalBalance.value = (totalBalance.value?:0.0 )+ model.amount
-                            }
-                            else{
-                                totalBalance.value = (totalBalance.value?:0.0) - model.amount
-                            }
+                    if (isSuccess) {
+                        withContext(Dispatchers.Main) {
+                            totalBalance.value = updatedTotalBalance
+                            navController.popBackStack()
                         }
                     }
                 }
-
-                navController.popBackStack()
-               // onAddExpenseClick(model)
-
             }
         }
 
-        Button(onClick = {validateAndSubmitExpense()},
-            modifier = Modifier.fillMaxWidth()) {
-            ExpenseTextView(text = "Add Expense", fontSize = 14.sp, color = Color.White )
+        Button(onClick = { validateAndSubmitExpense() }, modifier = Modifier.fillMaxWidth()) {
+            ExpenseTextView(text = "Add Expense", fontSize = 14.sp, color = Color.White)
         }
     }
 
-    if (dateDialogVisibility.value)
-    {
-        DatePicker(onDateSelected = {date.value = it
-                                    dateDialogVisibility.value=false},
-            onDismiss = {dateDialogVisibility.value=false})
+    if (dateDialogVisibility.value) {
+        DatePicker(
+            onDateSelected = {
+                date.value = it
+                dateDialogVisibility.value = false
+            },
+            onDismiss = { dateDialogVisibility.value = false }
+        )
     }
-
-
-
 }
+
 
 
 

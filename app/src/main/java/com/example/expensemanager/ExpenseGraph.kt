@@ -165,34 +165,33 @@ fun ShowGraph(balanceEntries:List<BalanceEntry>) {
 
     val dateFormat = "dd/MM/yyyy"
 
-    //these are changes
-//    val xToDateMapKey = ExtraStore.Key<Map<Float,LocalDate>>()
-//    val xToDateMap = mutableMapOf<Float,LocalDate>()
-//    val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMM")
 
     LaunchedEffect(key1 = balanceEntries) {
         datasetForModel.clear()
         datasetLineSpec.clear()
-        
 
-        val dataPoints = balanceEntries.map {entry ->
-            val parsedDate = LocalDate.parse(entry.date, DateTimeFormatter.ofPattern(dateFormat))
-            val dateEpochDay = parsedDate.toEpochDay().toFloat()
-            FloatEntry(x = dateEpochDay, y = entry.totalBalance.toFloat())
+
+//        val dataPoints = balanceEntries.map {entry ->
+//            val parsedDate = LocalDate.parse(entry.date, DateTimeFormatter.ofPattern(dateFormat))
+//            val dateEpochDay = parsedDate.toEpochDay().toFloat()
+//            println("Mapping: Date - $parsedDate, Balance - ${entry.totalBalance}")
+//            FloatEntry(x = dateEpochDay, y = entry.totalBalance.toFloat())
+//        }
+
+        val dataPoints = mutableListOf<FloatEntry>()
+        for (entry in balanceEntries) {
+            try {
+                val parsedDate = LocalDate.parse(entry.date, DateTimeFormatter.ofPattern(dateFormat))
+                val dateEpochDay = parsedDate.toEpochDay().toFloat()
+            println("Mapping: Date - $parsedDate, Balance - ${entry.totalBalance}")
+                dataPoints.add(FloatEntry(x = dateEpochDay, y = entry.totalBalance.toFloat()))
+            } catch (e: Exception) {
+                // Handle parsing error (optional)
+                // e.printStackTrace()  // Uncomment for debugging if needed
+            }
         }
 
 
-
-        //var xPos = 0f
-        //val dataPoints = arrayListOf<FloatEntry>()
-
-//        val dataPoints = balanceEntries.mapIndexed { index, entry ->
-//            val date = LocalDate.parse(entry.date,DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-//            val xValue = index.toFloat()
-//            xToDateMap[xValue] = date
-//            FloatEntry(x = xValue, y = entry.totalBalance.toFloat())
-//            //FloatEntry(x = index.toFloat(), y = entry.totalBalance.toFloat())
-//        }
 
 
 
@@ -209,11 +208,7 @@ fun ShowGraph(balanceEntries:List<BalanceEntry>) {
                 )
             )
         )
-//        for (i in 1..100) {
-//            val randomFloat = (1..100).random().toFloat()
-//            dataPoints.add(FloatEntry(x = xPos, y = randomFloat))
-//            xPos += 1f
-//        }
+
         datasetForModel.add(dataPoints)
         modelProducer.setEntries(datasetForModel)
     }
@@ -249,9 +244,7 @@ fun ShowGraph(balanceEntries:List<BalanceEntry>) {
                         date.format(dateTimeFormatter)
 
                     },
-//                    valueFormatter = {value, _->
-//                        ((value.toInt())+1).toString()
-//                    }
+
                 ),
 
                 chartScrollState = scrollState,
