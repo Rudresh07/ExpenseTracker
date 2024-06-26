@@ -14,3 +14,5 @@ data class ExpenseEntity(
     val type:String,
     val totalBalance:Double,
 )
+
+

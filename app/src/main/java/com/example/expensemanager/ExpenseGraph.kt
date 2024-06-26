@@ -111,7 +111,6 @@ val state = viewModel.spending.collectAsState(initial = emptyList())
             ShowTopSpending(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
                     .constrainAs(list) {
                         top.linkTo(card.bottom)
                         start.linkTo(parent.start)
@@ -145,7 +144,13 @@ fun ShowTopSpending(modifier: Modifier,list:List<ExpenseEntity>,viewModel: HomeV
 
         items(list.take(10)){item ->
             SpendingItem(title = item.title,
-                amount = item.amount.toString(),
+                amount = with(item.amount.toString()) { // Use with block for string manipulation
+                    if (item.type == "Income") {
+                        "+ ₹ $this" // Prepend "+" and rupee symbol for income
+                    } else {
+                        "- ₹ $this" // Prepend "-" and rupee symbol for expense
+                    }
+                },
                 icon = viewModel.getItemIcon(item),
                 date = item.date.toString(),
                 color = if (item.type == "Income") Green else Color.Red
@@ -172,12 +177,13 @@ fun SpendingItem(title: String,
                 modifier = Modifier.size(50.dp))
             Spacer(modifier = Modifier.size(8.dp))
 
-            Column {
+            Column(modifier = Modifier
+                .fillMaxWidth(0.7f)) {
                 ExpenseTextView(text = title, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 ExpenseTextView(text = date, fontSize = 12.sp, fontWeight = FontWeight.Medium)
             }
         }
-        ExpenseTextView(text = amount, fontSize = 20.sp,
+        ExpenseTextView(text = amount, fontSize = 16.sp,
             modifier = Modifier.align(Alignment.CenterEnd),
             color = color,
             fontWeight = FontWeight.Bold)

@@ -51,7 +51,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.expensemanager.Viewmodel.AddExpenseViewModel
+import com.example.expensemanager.Viewmodel.NotificationViewModel
 import com.example.expensemanager.data.model.ExpenseEntity
+import com.example.expensemanager.notification.NotificationHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -84,9 +86,11 @@ fun AddExpense(navController:NavController) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_back),
                     contentDescription = null,
-                    modifier = Modifier.clickable {
-                        navController.popBackStack()
-                    }.align(Alignment.CenterStart)
+                    modifier = Modifier
+                        .clickable {
+                            navController.popBackStack()
+                        }
+                        .align(Alignment.CenterStart)
                    // modifier = Modifier.align(Alignment.CenterStart)
                 )
 
@@ -134,6 +138,13 @@ fun AddExpenseCard(
     navController: NavController,
     viewModel: AddExpenseViewModel = viewModel(factory = AddExpenseViewModel.AddExpenseViewModelFactory(LocalContext.current))
 ) {
+
+    val notificationViewModel: NotificationViewModel = viewModel(factory = NotificationViewModel.NotificationViewModelFactory(LocalContext.current))
+
+    val context = LocalContext.current
+val notificationHandler = remember {
+    NotificationHandler(context,notificationViewModel)
+}
     val totalBalance = remember { mutableStateOf<Double?>(null) }
 
     // Coroutine to fetch total balance
@@ -145,6 +156,11 @@ fun AddExpenseCard(
             }
         }
     }
+
+    LaunchedEffect(Unit) {
+        notificationHandler.createNotificationChannel()
+    }
+
 
     val name = remember { mutableStateOf("") }
     val amount = remember { mutableStateOf("") }
@@ -198,7 +214,7 @@ fun AddExpenseCard(
         Spacer(modifier = Modifier.size(4.dp))
         ExpenseDropDown(
             listOf(
-                "--Choose Category--", "Subscription", "Upworks", "Salary","Bills Payment",
+                "--Choose Category--", "Subscription", "Upwork", "Salary","Bills Payment",
                 "Starbucks", "Education", "Hospital", "Online Shopping", "Offline Shopping", "Grocery","EMI Payment","Credit Card",
                 "Money Transfer","Rent","Loan","Other"
             ),
@@ -223,6 +239,7 @@ fun AddExpenseCard(
                 val expenseAmount = amount.value.toDoubleOrNull() ?: 0.0
                 val formattedDate = utils.formatDate(date.value)
                 val expenseType = type.value
+                val title = name.value
 
                 val currentTotalBalance = totalBalance.value ?: 0.0
                 val updatedTotalBalance = if (expenseType == "Income") {
@@ -235,7 +252,7 @@ fun AddExpenseCard(
 
                 val model = ExpenseEntity(
                     id = null,
-                     name.value,
+                     title,
                     amount = expenseAmount,
                     date = formattedDate,
                     category = category.value,
@@ -248,6 +265,7 @@ fun AddExpenseCard(
                     if (isSuccess) {
                         withContext(Dispatchers.Main) {
                             totalBalance.value = updatedTotalBalance
+                            notificationHandler.sendNotification(expenseAmount,expenseType,totalBalance,title)
                             navController.popBackStack()
                         }
                     }

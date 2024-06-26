@@ -110,7 +110,13 @@ fun Transactionslist(modifier: Modifier, list: List<ExpenseEntity>, viewmodel: H
         items(list) { item ->
             EachTransactionItems(
                 title = item.title,
-                amount = item.amount.toString(),
+                amount = with(item.amount.toString()) { // Use with block for string manipulation
+                    if (item.type == "Income") {
+                        "+ ₹ $this" // Prepend "+" and rupee symbol for income
+                    } else {
+                        "- ₹ $this" // Prepend "-" and rupee symbol for expense
+                    }
+                },
                 icon = viewmodel.getItemIcon(item),
                 date = item.date.toString(),
                 color = if (item.type == "Income") Color.Green else Color.Red
@@ -140,14 +146,15 @@ fun EachTransactionItems(
             )
             Spacer(modifier = Modifier.size(8.dp))
 
-            Column {
+            Column(modifier = Modifier
+                .fillMaxWidth(0.7f)) {
                 ExpenseTextView(text = title, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 ExpenseTextView(text = date, fontSize = 12.sp, fontWeight = FontWeight.Medium)
             }
         }
         ExpenseTextView(
             text = amount,
-            fontSize = 20.sp,
+            fontSize = 16.sp,
             modifier = Modifier.align(Alignment.CenterEnd),
             color = color,
             fontWeight = FontWeight.Bold

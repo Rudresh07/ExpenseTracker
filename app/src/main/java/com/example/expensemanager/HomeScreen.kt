@@ -1,5 +1,6 @@
 package com.example.expensemanager
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.expensemanager.Viewmodel.HomeViewmodel
@@ -40,8 +42,11 @@ import com.example.expensemanager.ui.theme.Zinc
 
 @Composable
 fun HomeScreen(navController:NavController){
+
+    val context = LocalContext.current
+
     val viewmodel:HomeViewmodel =
-        HomeViewmodel.HomeViewModelFactory(LocalContext.current).create(HomeViewmodel::class.java)
+        HomeViewmodel.HomeViewModelFactory(context).create(HomeViewmodel::class.java)
     Surface(modifier = Modifier.fillMaxSize()) {
         ConstraintLayout(modifier = Modifier.fillMaxSize() ) {
             val(nameRow, list, card,topBar, add) = createRefs()
@@ -72,7 +77,12 @@ fun HomeScreen(navController:NavController){
                      
                      Image(painter = painterResource(id = R.drawable.ic_notification),
                          contentDescription = null,
-                         modifier = Modifier.align(Alignment.CenterEnd))
+                         modifier = Modifier.align(Alignment.CenterEnd)
+                             .clickable {
+                                 val intent = Intent(context,NotificationActivity::class.java)
+                                 startActivity(context,intent,null)
+                                 //implement notification activity using intent
+                             })
             }
             
             val state = viewmodel.expense.collectAsState(initial = emptyList())
@@ -169,7 +179,13 @@ fun TransactionList(modifier: Modifier, list: List<ExpenseEntity>,viewmodel: Hom
 
        items(list.take(10)){item ->
            TransactionItem(title = item.title,
-               amount = item.amount.toString(),
+               amount = with(item.amount.toString()) { // Use with block for string manipulation
+                   if (item.type == "Income") {
+                       "+ ₹ $this" // Prepend "+" and rupee symbol for income
+                   } else {
+                       "- ₹ $this" // Prepend "-" and rupee symbol for expense
+                   }
+               },
                icon = viewmodel.getItemIcon(item),
                date = item.date.toString(),
                color = if (item.type == "Income") Color.Green else Color.Red
@@ -195,12 +211,13 @@ Box (modifier = Modifier
             modifier = Modifier.size(50.dp))
         Spacer(modifier = Modifier.size(8.dp))
         
-        Column {
+        Column(modifier = Modifier
+            .fillMaxWidth(0.7f)) {
             ExpenseTextView(text = title, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             ExpenseTextView(text = date, fontSize = 12.sp, fontWeight = FontWeight.Medium)
         }
     }
-    ExpenseTextView(text = amount, fontSize = 20.sp,
+    ExpenseTextView(text = amount, fontSize = 16.sp,
         modifier = Modifier.align(Alignment.CenterEnd),
         color = color,
         fontWeight = FontWeight.Bold)

@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.expensemanager.data.model.BalanceEntry
 import com.example.expensemanager.data.model.ExpenseEntity
+import com.example.expensemanager.data.model.NotificationEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -36,4 +37,13 @@ interface ExpenseDao {
     suspend fun updateExpense(expenseEntity: ExpenseEntity)
 
 
+}
+
+@Dao
+interface NotificationDao{
+    @Insert
+    suspend fun insert(notification: NotificationEntity)
+
+    @Query("SELECT * FROM notification_Table ORDER BY timestamp DESC")
+    suspend fun getAllNotifications(): List<NotificationEntity>
 }

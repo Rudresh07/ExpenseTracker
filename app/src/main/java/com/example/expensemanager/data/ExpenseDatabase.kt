@@ -6,14 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.expensemanager.data.dao.ExpenseDao
+import com.example.expensemanager.data.dao.NotificationDao
 import com.example.expensemanager.data.model.ExpenseEntity
+import com.example.expensemanager.data.model.NotificationEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [ExpenseEntity::class], version = 1)
+@Database(entities = [ExpenseEntity::class, NotificationEntity::class], version = 1)
 abstract class ExpenseDatabase :RoomDatabase() {
    abstract fun expenseDao(): ExpenseDao
+   abstract fun notificationDao(): NotificationDao
 
 
 
@@ -35,6 +38,7 @@ abstract class ExpenseDatabase :RoomDatabase() {
                fun InitBasicData(context: Context){
                    CoroutineScope(Dispatchers.IO).launch {
                        val dao = getDatabase(context).expenseDao()
+                       val dao1 = getDatabase(context).notificationDao()
                    }
                }
            }).build()
