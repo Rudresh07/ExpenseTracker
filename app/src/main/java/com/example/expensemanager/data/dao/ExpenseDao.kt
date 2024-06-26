@@ -16,7 +16,11 @@ interface ExpenseDao {
    suspend fun getAllBalanceEntries(): List<BalanceEntry>
 
 
-    @Query("SELECT * FROM expenses_Table ORDER BY date DESC")
+   @Query("SELECT * FROM expenses_Table WHERE type ='Expense' ORDER BY amount DESC ")
+   fun getAllTransaction(): Flow<List<ExpenseEntity>>
+
+
+    @Query("SELECT * FROM expenses_Table  ORDER BY date DESC")
     fun getAllExpenses(): Flow<List<ExpenseEntity>>
 
     @Query("SELECT SUM(CASE WHEN type = 'Income' THEN amount ELSE -amount END) AS totalBalance FROM expenses_Table")

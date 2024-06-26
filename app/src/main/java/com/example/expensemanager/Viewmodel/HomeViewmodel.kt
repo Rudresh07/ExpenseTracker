@@ -11,13 +11,13 @@ import com.example.expensemanager.data.model.BalanceEntry
 import com.example.expensemanager.data.model.ExpenseEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class HomeViewmodel(val dao:ExpenseDao) : ViewModel() {
 
 
     val expense = dao.getAllExpenses()
+    val spending = dao.getAllTransaction()
 
     fun getItemIcon(item: ExpenseEntity): Int {
         if (item.category == "Paypal"){
@@ -26,11 +26,8 @@ class HomeViewmodel(val dao:ExpenseDao) : ViewModel() {
         else if (item.category == "Youtube"){
             return R.drawable.ic_youtube
         }
-        else if (item.category == "Netflix"){
-            return R.drawable.ic_netflix
-        }
-        else if (item.category == "Amazon"){
-           // return R.drawable.ic_amazon
+        else if (item.category == "Subscription"){
+            return R.drawable.subscription
         }
 
         else if (item.category == "Starbucks"){
@@ -56,12 +53,33 @@ class HomeViewmodel(val dao:ExpenseDao) : ViewModel() {
             return R.drawable.medicine
         }
 
+        else if (item.category == "Bill Payment"){
+            return R.drawable.bills
+        }
         else if (item.category == "Grocery"){
             return R.drawable.grocery
         }
+        else if (item.category == "Loan"){
+            return R.drawable.loan
+        }
+        else if (item.category == "Rent"){
+            return R.drawable.rent
+        }
+        else if (item.category == "Credit Card"){
+            return R.drawable.credit_card
+        }
+        else if (item.category == "Money Transfer"){
+            return R.drawable.money_transfer
+        }
+        else if (item.category == "EMI Payment"){
+            return R.drawable.bills
+        }
 
+        else if (item.category == "Salary"){
+            return R.drawable.salary_pay
+        }
 
-        return R.drawable.ic_upwork
+        return R.drawable.other
     }
 
 
@@ -118,6 +136,9 @@ class HomeViewmodel(val dao:ExpenseDao) : ViewModel() {
             _balanceEntries.value = dao.getAllBalanceEntries()
         }
     }
+
+
+
 
 
 

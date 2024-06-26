@@ -2,6 +2,7 @@
 
 package com.example.expensemanager
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePickerDialog
@@ -40,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -168,7 +171,7 @@ fun AddExpenseCard(
 
         ExpenseTextView(text = "Amount", fontSize = 14.sp)
         Spacer(modifier = Modifier.size(4.dp))
-        OutlinedTextField(value = amount.value, onValueChange = { amount.value = it }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = amount.value, onValueChange = { amount.value = it }, modifier = Modifier.fillMaxWidth(),  keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
         Spacer(modifier = Modifier.size(8.dp))
 
         // Date using datepicker dialog
@@ -195,8 +198,9 @@ fun AddExpenseCard(
         Spacer(modifier = Modifier.size(4.dp))
         ExpenseDropDown(
             listOf(
-                "--Choose Category--", "Netflix", "Paypal", "Upworks", "Salary",
-                "Starbucks", "Education", "Hospital", "Online Shopping", "Offline Shopping", "Grocery"
+                "--Choose Category--", "Subscription", "Upworks", "Salary","Bills Payment",
+                "Starbucks", "Education", "Hospital", "Online Shopping", "Offline Shopping", "Grocery","EMI Payment","Credit Card",
+                "Money Transfer","Rent","Loan","Other"
             ),
             onItemSelected = { category.value = it }
         )
@@ -225,7 +229,9 @@ fun AddExpenseCard(
                     currentTotalBalance + expenseAmount
                 } else {
                     currentTotalBalance - expenseAmount
+
                 }
+                Log.d("TAG", "validateAndSubmitExpense: $currentTotalBalance")
 
                 val model = ExpenseEntity(
                     id = null,
@@ -272,6 +278,7 @@ fun AddExpenseCard(
  fun DatePicker(onDateSelected: (date:Long) -> Unit,
                 onDismiss : ()->Unit)
  {
+
      val datePickerState = rememberDatePickerState()
      val selectedDate = datePickerState.selectedDateMillis ?:0L
 

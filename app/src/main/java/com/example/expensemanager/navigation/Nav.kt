@@ -1,5 +1,7 @@
 package com.example.expensemanager.navigation
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -11,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -21,22 +25,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.expensemanager.AddExpense
 import com.example.expensemanager.ExpenseGraph
 import com.example.expensemanager.HomeScreen
+import com.example.expensemanager.Transaction
 
 @Composable
 fun NavHostScreen() {
     val navController = rememberNavController()
 
-//    NavHost(navController = navController, startDestination = "/home") {
-//
-//        composable(route = "/home"){
-//            HomeScreen(navController)
-//        }
-//
-//        composable(route = "/add"){
-//            AddExpense(navController)
-//        }
-//
-//    }
 
     Scaffold(
         bottomBar = {
@@ -83,6 +77,13 @@ fun NavHostScreen() {
             composable(route = "/graph")
             {
                 ExpenseGraph(navController)
+            }
+
+            composable(route = "/transactions")
+            {
+               // TransactionScreen(navController)
+               val intent = Intent(LocalContext.current,Transaction::class.java)
+                startActivity(LocalContext.current,intent,null)
             }
 
         }

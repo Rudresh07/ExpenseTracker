@@ -2,6 +2,7 @@ package com.example.expensemanager
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -97,7 +98,7 @@ fun HomeScreen(navController:NavController){
                     bottom.linkTo(parent.bottom)
                     height = Dimension.fillToConstraints
                 }, list = state.value,
-                viewmodel
+                viewmodel,navController
             )
 
 
@@ -152,18 +153,21 @@ fun CardItem(modifier: Modifier, balance: String, income: String, expense: Strin
 }
 
 @Composable
-fun TransactionList(modifier: Modifier, list: List<ExpenseEntity>,viewmodel: HomeViewmodel)
+fun TransactionList(modifier: Modifier, list: List<ExpenseEntity>,viewmodel: HomeViewmodel,navController: NavController)
 {
     LazyColumn(modifier = modifier.padding(horizontal = 16.dp)) {
         item { Box(modifier = Modifier.fillMaxWidth())
         {
-            ExpenseTextView(text = "Recent Transaction", fontSize = 20.sp)
+            ExpenseTextView(text = "Recent Transaction", fontSize = 18.sp,fontWeight = FontWeight.SemiBold)
             ExpenseTextView(text = "See All",
                 fontSize = 16.sp,
-                modifier = Modifier.align(Alignment.CenterEnd))
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.align(Alignment.CenterEnd).clickable {
+                    navController.navigate("/transactions")
+                })
         } }
 
-       items(list){item ->
+       items(list.take(10)){item ->
            TransactionItem(title = item.title,
                amount = item.amount.toString(),
                icon = viewmodel.getItemIcon(item),
