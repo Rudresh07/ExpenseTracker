@@ -214,7 +214,7 @@ val notificationHandler = remember {
         Spacer(modifier = Modifier.size(4.dp))
         ExpenseDropDown(
             listOf(
-                "--Choose Category--", "Subscription", "Upwork", "Salary","Bills Payment",
+                "--Choose Category--", "Subscription", "Upwork", "Salary","Bill Payment",
                 "Starbucks", "Education", "Hospital", "Online Shopping", "Offline Shopping", "Grocery","EMI Payment","Credit Card",
                 "Money Transfer","Rent","Loan","Other"
             ),
