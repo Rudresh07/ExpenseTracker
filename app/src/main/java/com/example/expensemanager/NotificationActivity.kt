@@ -127,12 +127,5 @@ fun NotificationItem(notification: NotificationEntity) {
             modifier = Modifier
                 .padding(16.dp)
         )
-//        Spacer(modifier = Modifier.height(4.dp))
-//        Text(
-//            text = notification.timestamp.toString(),
-//            modifier = Modifier
-//                .padding(16.dp)
-//        )
-
     }
 }

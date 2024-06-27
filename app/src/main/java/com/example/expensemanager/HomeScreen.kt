@@ -69,8 +69,8 @@ fun HomeScreen(navController:NavController){
                 Column(modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(end = 20.dp)) {
-                    Text(text = "Hello Rudy", fontSize = 16.sp, color = Color.White)
-                    Text(text = "This is an Expense tracker App", fontSize = 20.sp,
+                    Text(text = "Hi there! ", fontSize = 16.sp, color = Color.White)
+                    Text(text = "Track your expenses easily", fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,)
                 }
