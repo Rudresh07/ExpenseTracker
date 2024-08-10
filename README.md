@@ -1,7 +1,7 @@
-# Expense Manager
+# Expense Tracker
 
 
-Expense Manager is an Android application developed using Kotlin, Jetpack Compose, and the MVVM architecture. It allows users to manage their expenses efficiently, with features such as adding expenses, viewing notifications for each expense, and visualizing data using Vico graph.
+Expense Tracker is an Android application developed using Kotlin, Jetpack Compose, and the MVVM architecture. It allows users to manage their expenses efficiently, with features such as adding expenses, viewing notifications for each expense, and visualizing data using Vico graph.
 
 
 ## Features
@@ -16,7 +16,7 @@ Expense Manager is an Android application developed using Kotlin, Jetpack Compos
 - **UI:** Jetpack Compose
 - **Architecture:** MVVM (Model-View-ViewModel)
 - **Database:** Room
-- **Notifications:** Android NotificationManager
+- **Notifications:** Android NotificationTracker
 - **Graphs:** Vico graph
 ## Getting started
 
